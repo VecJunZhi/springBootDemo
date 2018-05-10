@@ -34,10 +34,10 @@ public class JJnWlmCountController {
     @RequestMapping("/receiveData")
     public void save(@RequestBody ReceiveDataDto receiveDataDto) {
         List<JJnWlmCountLogDto> list=receiveDataDto.getReceiveData();
-//        jnWlmCountLogService.insertDataBatch(list);
-        for (JJnWlmCountLogDto dto : list) {
+        jnWlmCountLogService.insertDataBatch(list);
+       /* for (JJnWlmCountLogDto dto : list) {
             jnWlmCountLogService.insertData(dto);
-        }
+        }*/
 
 
     }
