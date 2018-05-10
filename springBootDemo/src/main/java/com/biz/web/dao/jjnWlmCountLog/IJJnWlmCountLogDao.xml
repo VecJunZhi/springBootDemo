@@ -18,8 +18,8 @@
         VALUES
         (#{fileName},#{receiveDate}, #{sheetIndex}, #{sheetName},#{num})
     </insert>
-
-    <insert id="insertDataBatch" parameterType="java.util.List">
+    <!--对于Oracle来说，如果不用序列自增，则必须设置useGeneratedKeys="false"否则报错命令未正确结束-->
+    <insert id="insertDataBatch" parameterType="java.util.List" useGeneratedKeys="false">
         INSERT INTO
         THIRD.JJN_WLM_COUNT_LOG
         (FILENAME,RECEIVEDATE,SHEETINDEX,SHEETNAME,NUM)
