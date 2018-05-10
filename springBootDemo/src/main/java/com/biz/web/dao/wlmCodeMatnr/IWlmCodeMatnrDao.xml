@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.biz.web.dao.wlmCodeMatnr.IWlmCodeMatnrDao">
+
+    <resultMap type="WlmCodeMatnrEntity" id="wlmCodeMatnrEntity">
+        <result property="uidstr" column="uidstr"/>
+        <result property="mandt" column="mandt"/>
+        <result property="boxflag" column="boxflag"/>
+        <result property="matnr" column="matnr"/>
+        <result property="vtweg" column="vtweg"/>
+        <result property="kunnr" column="kunnr"/>
+        <result property="vtewgName" column="vtewgName"/>
+        <result property="maktx" column="maktx"/>
+        <result property="matnrType" column="matnrType"/>
+        <result property="kunnrName" column="kunnrName"/>
+    </resultMap>
+    <select id="queryWlm" resultMap="wlmCodeMatnrEntity">
+        SELECT uidstr,
+        mandt,
+        boxflag,
+        matnr,
+        vtweg
+        FROM THIRD.WLM_MATCH
+        WHERE    1=1
+--          cdate = TO_CHAR (SYSDATE, 'yyyyMMdd')
+        AND matnr IN (SELECT code
+        FROM THIRD.TB_JS_DICTIONARIES
+        WHERE     typename = 'matnrlarge'
+        AND status &lt;&gt; '003'
+        AND notecode IN ('JJNK6', 'JJNK6(15B)', 'JJNK9'))
+        and rownum &lt;100000
+    </select>
+    <select id="queryMandtKunnr" resultMap="wlmCodeMatnrEntity">
+       SELECT mandt, sdkunnr kunnr
+       FROM THIRD.THIRD_WLM
+      WHERE TO_CHAR (CREATE_DATE, 'yyyy-MM-dd') ='2018-01-25'   and rownum &lt;100000
+--        TO_CHAR (SYSDATE, 'yyyy-MM-dd')
+    </select>
+    <select id="queryVtweg" resultMap="wlmCodeMatnrEntity">
+        SELECT CODE vtweg, NAME vtewgName
+        FROM THIRD.COST_CHANNEL
+--         WHERE TO_CHAR (CREATE_DATE, 'yyyy-MM-dd') = TO_CHAR (SYSDATE, 'yyyy-MM-dd')
+    </select>
+    <select id="queryMatnr" resultMap="wlmCodeMatnrEntity">
+        SELECT distinct  code matnr, dicname maktx,noteCode matnrType
+        FROM THIRD.TB_JS_DICTIONARIES
+      WHERE     typename = 'matnrlarge'
+        AND status &lt;&gt; '003'
+--         AND TO_CHAR (CREATE_DATE, 'yyyy-MM-dd') =
+--         TO_CHAR (SYSDATE, 'yyyy-MM-dd')
+    </select>
+    <select id="queryKunnr" resultMap="wlmCodeMatnrEntity">
+      SELECT DISTINCT info.cust_sap_no kunnr, info.cust_name kunnrName
+  FROM customer.contract_info info
+       INNER JOIN customer.contract_item item
+          ON info.contract_no = item.contract_id
+ WHERE item.matkl IN (SELECT third_id
+                        FROM customer.product_detail
+                       WHERE matnr IN (SELECT code
+                                         FROM third.tb_js_dictionaries
+                                        WHERE notecode IN ('JJNK9',
+                                                           'JJNK6',
+                                                           'JJNK6(15B)')))
+    </select>
+</mapper>

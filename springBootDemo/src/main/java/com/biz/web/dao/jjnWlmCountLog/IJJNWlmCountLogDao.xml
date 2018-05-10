@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.biz.web.dao.jjnWlmCountLog.IJJnWlmCountLogDao">
+
+    <resultMap type="JJnWlmCountLogEntity" id="userInfoResult">
+        <result property="fileName" column="FILENAME"/>
+        <result property="receiveDate" column="RECEIVEDATE"/>
+        <result property="sheetIndex" column="SHEETINDEX"/>
+        <result property="sheetName" column="SHEETNAME"/>
+        <result property="num" column="NUM"/>
+    </resultMap>
+
+    <insert id="insertData" parameterType="JJnWlmCountLogDto">
+        INSERT INTO
+        THIRD.JJN_WLM_COUNT_LOG
+        (FILENAME,RECEIVEDATE,SHEETINDEX,SHEETNAME,NUM)
+        VALUES
+        (#{fileName},#{receiveDate}, #{sheetIndex}, #{sheetName},#{num})
+    </insert>
+
+    <insert id="insertDataBatch" parameterType="java.util.List">
+        INSERT INTO
+        THIRD.JJN_WLM_COUNT_LOG
+        (FILENAME,RECEIVEDATE,SHEETINDEX,SHEETNAME,NUM)
+        <!--VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.fileName},#{item.receiveDate}, #{item.sheetIndex}, #{item.sheetName},#{item.num})
+        </foreach>-->
+        <foreach  collection="list" item="item" index="index"  separator="union">
+            select
+            #{item.fileName},
+            #{item.receiveDate},
+            #{item.sheetIndex},
+            #{item.sheetName},
+            #{item.num}
+            from dual
+        </foreach>
+    </insert>
+
+</mapper>
